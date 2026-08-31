@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="doc-title">Tanay Biswas | Software Engineer & Creator</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- EmailJS SDK Initialization -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init("T5GlDaRVS2BAG8agd");
+    })();
+  </script>
+
+  <!-- Firebase Realtime Database & Auth SDKs (Compat v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <style>
+    /* CSS THEME SYSTEM VARIABLES */
+    :root[data-theme="cyan"] {
+      --bg-primary: #050816;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --bg-nav: rgba(5, 8, 22, 0.85);
+      --modal-bg: #0b112c;
+      --input-bg: rgba(255, 255, 255, 0.06);
+      --text-main: #ffffff;
+      --text-muted: #8b949e;
+      --accent: #00ffff;
+      --accent-glow: 0 0 20px cyan;
+      --accent-glow-strong: 0 0 35px cyan;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --card-hover-border: rgba(0, 255, 255, 0.4);
+      --btn-text: #000000;
+      --circle-bg: rgba(0, 255, 255, 0.05);
+      --footer-bg: #03050f;
+      --term-bg: #020617;
+      --chat-bot-bubble: rgba(0, 255, 255, 0.12);
+      --gh-box-bg: #0d1117;
+      --gh-border: #30363d;
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f4f6f9;
+      --bg-card: #ffffff;
+      --bg-nav: rgba(255, 255, 255, 0.9);
+      --modal-bg: #ffffff;
+      --input-bg: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #57606a;
+      --accent: #0284c7;
+      --accent-glow: 0 4px 14px rgba(2, 132, 199, 0.25);
+      --accent-glow-strong: 0 6px 20px rgba(2, 132, 199, 0.35);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --card-hover-border: rgba(2, 132, 199, 0.4);
+      --btn-text: #ffffff;
+      --circle-bg: rgba(2, 132, 199, 0.05);
+      --footer-bg: #e2e8f0;
+      --term-bg: #1e293b;
+      --chat-bot-bubble: rgba(2, 132, 199, 0.1);
+      --gh-box-bg: #ffffff;
+      --gh-border: #d0d7de;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    .bg-animation {
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--circle-bg);
+      animation: float 15s infinite linear;
+      backdrop-filter: blur(25px);
+    }
+
+    .circle:nth-child(1) { width: 350px; height: 350px; top: 10%; left: 5%; }
+    .circle:nth-child(2) { width: 300px; height: 300px; bottom: 10%; right: 5%; animation-duration: 20s; }
+    .circle:nth-child(3) { width: 200px; height: 200px; top: 50%; left: 50%; animation-duration: 12s; }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-40px) rotate(180deg); }
+      100% { transform: translateY(0px) rotate(360deg); }
+    }
+
+    /* MATRIX CANVAS OVERLAY */
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      pointer-events: all;
+      display: none;
+      background: rgba(0, 0, 0, 0.92);
+      cursor: pointer;
+    }
+
+    nav {
+      position: fixed;
+      width: 100%;
+      padding: 18px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(20px);
+      background: var(--bg-nav);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 1000;
+    }
+
+    nav h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: var(--accent-glow);
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 24px;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      align-items: center;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 500;
+      transition: 0.3s;
+      position: relative;
+      padding: 6px 0;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--accent);
+      text-shadow: var(--accent-glow);
+    }
+
+    nav ul li a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      box-shadow: var(--accent-glow);
+      border-radius: 2px;
+    }
+
+    .theme-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .theme-selector-box i {
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .theme-selector-box select {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .theme-selector-box select option {
+      background: var(--modal-bg);
+      color: var(--text-main);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 140px 8% 80px 8%;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text { flex: 1; min-width: 320px; }
+    .hero-text h2 { font-size: 50px; line-height: 1.2; margin-bottom: 10px; }
+    .hero-text h2 span { color: var(--accent); text-shadow: var(--accent-glow); }
+    .typing { font-size: 24px; color: var(--accent); margin-bottom: 20px; height: 35px; font-weight: 600; }
+    .hero-text p { color: var(--text-muted); max-width: 600px; line-height: 1.8; margin-bottom: 30px; font-size: 15px; }
+
+    .btn-group { display: flex; gap: 20px; flex-wrap: wrap; }
+    .btn {
+      padding: 13px 30px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary { background: var(--accent); color: var(--btn-text); box-shadow: var(--accent-glow); border: none; }
+    .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: var(--accent-glow-strong); }
+    .btn-secondary { background: transparent; border: 2px solid var(--accent); color: var(--text-main); }
+    .btn-secondary:hover { background: var(--accent); color: var(--btn-text); box-shadow: var(--accent-glow-strong); }
+
+    .socials { margin-top: 30px; display: flex; gap: 15px; }
+    .socials a {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-main);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      transition: 0.3s;
+      text-decoration: none;
+    }
+    .socials a:hover { transform: translateY(-4px); background: var(--accent); color: var(--btn-text); box-shadow: var(--accent-glow); }
+
+    .hero-image { flex: 1; display: flex; justify-content: center; min-width: 300px; }
+    .hero-image img {
+      width: 330px;
+      height: 330px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid var(--accent);
+      box-shadow: var(--accent-glow);
+      animation: floatImage 4s ease-in-out infinite;
+    }
+
+    @keyframes floatImage {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    section { padding: 90px 8%; }
+    .title { font-size: 38px; text-align: center; margin-bottom: 50px; color: var(--accent); text-shadow: var(--accent-glow); }
+
+    .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+      padding: 28px;
+      border-radius: 20px;
+      transition: 0.3s;
+      position: relative;
+    }
+    .card:hover { transform: translateY(-6px); border-color: var(--card-hover-border); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
+
+    /* GITHUB METRICS */
+    .github-stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 950px;
+      margin: 0 auto 30px auto;
+    }
+
+    .github-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      transition: 0.3s;
+    }
+    .github-stat-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .github-stat-card i {
+      font-size: 28px;
+      color: var(--accent);
+      margin-bottom: 10px;
+      text-shadow: var(--accent-glow);
+    }
+    .github-stat-card h4 {
+      font-size: 26px;
+      color: var(--text-main);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .github-stat-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* GITHUB COMMIT DASHBOARD */
+    .github-commit-dashboard {
+      max-width: 950px;
+      margin: 0 auto 50px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 25px;
+      backdrop-filter: blur(20px);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .dashboard-header h3 {
+      font-size: 18px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dashboard-header h3 i {
+      color: var(--accent);
+    }
+
+    .gh-official-box {
+      background: var(--gh-box-bg);
+      border: 1px solid var(--gh-border);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .gh-official-svg-render {
+      width: 100%;
+      min-width: 720px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* TIMELINE STYLES */
+    .timeline-container {
+      max-width: 850px;
+      margin: 0 auto;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 45px;
+      border-left: 2px solid var(--accent);
+      transition: 0.3s;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 0px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: var(--accent-glow);
+    }
+
+    .timeline-period {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-role {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .timeline-company {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .timeline-desc {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+    
+    .project-clickable-area {
+      cursor: pointer;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+    .project-clickable-area:hover h3 {
+      color: var(--accent);
+      text-shadow: var(--accent-glow);
+    }
+    
+    .card img.project-thumb { 
+      width: 100%; 
+      height: 180px; 
+      object-fit: cover; 
+      border-radius: 12px; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+      transition: 0.3s;
+    }
+    .project-clickable-area:hover img.project-thumb {
+      transform: scale(1.02);
+      border-color: var(--accent);
+    }
+
+    .card h3 { color: var(--text-main); margin-bottom: 10px; font-size: 21px; transition: 0.2s; }
+    .card p { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
+
+    .project-links { display: flex; gap: 15px; margin-bottom: 15px; }
+    .project-links a { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
+    .project-links a:hover { text-decoration: underline; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+    .tag { background: rgba(125, 125, 125, 0.12); color: var(--accent); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+
+    .skills-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; max-width: 900px; margin: 0 auto; }
+    .skill-badge {
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      font-weight: 500;
+      color: var(--text-main);
+      transition: 0.3s;
+    }
+    .skill-badge:hover { background: var(--accent); color: var(--btn-text); box-shadow: var(--accent-glow); transform: scale(1.05); }
+
+    /* PROFESSIONAL GET IN TOUCH SECTION */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 35px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .contact-info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 22px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      backdrop-filter: blur(15px);
+      transition: 0.3s;
+    }
+    .info-card:hover {
+      border-color: var(--card-hover-border);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .info-card i {
+      font-size: 26px;
+      color: var(--accent);
+      text-shadow: var(--accent-glow);
+    }
+    .info-card h4 {
+      font-size: 16px;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .info-card p, .info-card a {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .contact-wrapper {
+      background: var(--bg-card);
+      padding: 35px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 7px; color: var(--text-muted); font-size: 13px; font-weight: 500; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+      font-size: 14px;
+    }
+    .form-group select option {
+      background: var(--modal-bg);
+      color: var(--text-main);
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+    .rating-box {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .stars i { color: rgba(125, 125, 125, 0.4); cursor: pointer; transition: 0.2s; font-size: 18px; }
+
+    /* SCROLL TO TOP FLOATING BUTTON */
+    .scroll-top-btn {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-nav);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+      z-index: 1500;
+    }
+    .scroll-top-btn.visible {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+    .scroll-top-btn:hover {
+      background: var(--accent);
+      color: var(--btn-text);
+      box-shadow: var(--accent-glow);
+      transform: translateY(-4px);
+    }
+
+    /* FLOATING ACTION DOCK */
+    .floating-action-dock {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1500;
+    }
+
+    .dock-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--bg-nav);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+    .dock-btn:hover {
+      transform: scale(1.1);
+      background: var(--accent);
+      color: var(--btn-text);
+      box-shadow: var(--accent-glow);
+    }
+
+    /* CLI / TERMINAL POPUP */
+    .terminal-popup {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 25px;
+      width: 440px;
+      max-width: 90vw;
+      height: 380px;
+      background: var(--term-bg);
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      z-index: 1600;
+      flex-direction: column;
+      overflow: hidden;
+      font-family: 'Fira Code', monospace;
+    }
+    .terminal-popup.active { display: flex; }
+
+    .terminal-header {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      color: var(--accent);
+    }
+    .terminal-header .dots { display: flex; gap: 6px; }
+    .terminal-header .dots span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-body {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 12.5px;
+      color: #a7f3d0;
+      line-height: 1.5;
+    }
+    .terminal-body p { margin-bottom: 6px; }
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .terminal-input-row span { color: var(--accent); margin-right: 8px; font-weight: 700; }
+    .terminal-input-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+    }
+
+    /* AI CHATBOT WIDGET */
+    .chatbot-popup {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 25px;
+      width: 380px;
+      max-width: 90vw;
+      height: 520px;
+      background: var(--modal-bg);
+      border: 1px solid var(--accent);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.5);
+      border-radius: 16px;
+      z-index: 1600;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chatbot-popup.active { display: flex; }
+
+    .chatbot-header {
+      background: var(--bg-nav);
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .chatbot-header h4 {
+      font-size: 14px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+    .chat-msg.bot {
+      align-self: flex-start;
+      background: var(--chat-bot-bubble);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-bottom-left-radius: 2px;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: var(--btn-text);
+      font-weight: 500;
+      border-bottom-right-radius: 2px;
+    }
+
+    .chatbot-input-row {
+      padding: 12px;
+      display: flex;
+      gap: 8px;
+      background: var(--bg-nav);
+      border-top: 1px solid var(--border-color);
+    }
+    .chatbot-input-row input {
+      flex: 1;
+      padding: 9px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      color: var(--text-main);
+      outline: none;
+      font-size: 13px;
+    }
+    .chatbot-input-row button {
+      background: var(--accent);
+      color: var(--btn-text);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.2s;
+    }
+    .chatbot-input-row button:hover { transform: scale(1.05); }
+
+    /* ADMIN MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(15px);
+      z-index: 2000;
+      overflow-y: auto;
+      padding: 40px 20px;
+    }
+    .modal-content {
+      background: var(--modal-bg);
+      color: var(--text-main);
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .close-btn { font-size: 24px; cursor: pointer; color: var(--text-muted); }
+    .close-btn:hover { color: #ff3366; }
+
+    .admin-tab { display: flex; gap: 12px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; flex-wrap: wrap; }
+    .admin-tab button { background: none; border: none; color: var(--text-muted); font-size: 15px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
+    .admin-tab button.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .admin-stat-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .admin-stat-card h5 { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
+    .admin-stat-card p { font-size: 22px; font-weight: 700; color: var(--accent); }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    table th, table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 13px; color: var(--text-main); vertical-align: middle; }
+    table th { color: var(--accent); }
+
+    .table-thumb {
+      width: 70px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      background: var(--footer-bg);
+      position: relative;
+    }
+
+    .secret-admin-trigger {
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .secret-admin-trigger:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 850px) {
+      .hero { flex-direction: column-reverse; text-align: center; }
+      .btn-group, .socials { justify-content: center; }
+      .contact-grid { grid-template-columns: 1fr; }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      nav ul {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--bg-nav);
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 25px 0;
+        gap: 20px;
+        transform: translateY(-150%);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease-in-out;
+      }
+
+      nav ul.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MATRIX CANVAS EFFECT -->
+  <canvas id="matrix-canvas" onclick="stopMatrix()"></canvas>
+
+  <div class="bg-animation">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+  </div>
+
+  <nav>
+    <h1 id="nav-brand-name">Tanay Biswas</h1>
+
+    <div class="menu-toggle" id="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <ul id="nav-links">
+      <li><a href="#home" class="nav-link active" onclick="closeMobileMenu()">Home</a></li>
+      <li><a href="#about" class="nav-link" onclick="closeMobileMenu()">About</a></li>
+      <li><a href="#experience" class="nav-link" onclick="closeMobileMenu()">Experience</a></li>
+      <li><a href="#skills" class="nav-link" onclick="closeMobileMenu()">Skills</a></li>
+      <li><a href="#projects" class="nav-link" onclick="closeMobileMenu()">Projects</a></li>
+      <li><a href="#contact" class="nav-link" onclick="closeMobileMenu()">Contact</a></li>
+      <li>
+        <div class="theme-selector-box">
+          <i class="fas fa-palette"></i>
+          <select id="theme-selector" onchange="changeTheme(this.value)">
+            <option value="cyan">⚡ Cyber Cyan</option>
+            <option value="light">☀️ Minimal Light</option>
+          </select>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <section class="hero" id="home">
+    <div class="hero-text">
+      <h2>Hi, I'm <span id="hero-display-name">Tanay Biswas</span></h2>
+      <div class="typing"></div>
+      <p id="hero-tagline">Creative Software Engineer | Full-Stack Architect | Building scalable intelligent applications and interfaces.</p>
+
+      <div class="btn-group">
+        <a href="#" id="cv-download-btn" class="btn btn-primary" target="_blank">Download CV</a>
+        <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+      </div>
+
+      <div class="socials" id="social-links-container"></div>
+    </div>
+
+    <div class="hero-image">
+      <img src="https://i.ibb.co/h1r448mk/20260512-103126-2.jpg" id="hero-profile-img" alt="Profile">
+    </div>
+  </section>
+
+  <section id="about">
+    <h2 class="title">About Me</h2>
+    <div class="card-container">
+      <div class="card">
+        <h3><i class="fas fa-user-astronaut" style="color:var(--accent);"></i> Who Am I?</h3>
+        <p id="about-who-text">Passionate Software Engineering student dedicated to architecting modern web apps, cloud integrations, and exploring generative AI tools.</p>
+      </div>
+      <div class="card">
+        <h3><i class="fas fa-graduation-cap" style="color:var(--accent);"></i> Education</h3>
+        <p id="about-edu-text">B.Sc. in Software Engineering at Daffodil International University (DIU). Emphasizing algorithms, state architecture, and software design patterns.</p>
+      </div>
+      <div class="card">
+        <h3><i class="fas fa-bullseye" style="color:var(--accent);"></i> Mission</h3>
+        <p id="about-mission-text">Deliver ultra-fast high-standard software solutions, maintain open-source projects, and contribute meaningfully to the developer ecosystem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE TIMELINE SECTION -->
+  <section id="experience">
+    <h2 class="title">Experience Timeline</h2>
+    <div class="timeline-container" id="timeline-list-container"></div>
+  </section>
+
+  <section id="skills">
+    <h2 class="title">Technical Skillset</h2>
+    <div class="skills-container" id="skills-list-container"></div>
+  </section>
+
+  <section id="projects">
+    <h2 class="title">Featured Projects</h2>
+    
+    <!-- GITHUB LIVE STATS METRICS -->
+    <div class="github-stats-container">
+      <div class="github-stat-card">
+        <i class="fab fa-github-alt"></i>
+        <h4 id="gh-public-repos"><i class="fas fa-spinner fa-spin" style="font-size: 20px;"></i></h4>
+        <p>Public Repositories</p>
+      </div>
+      <div class="github-stat-card">
+        <i class="fas fa-star"></i>
+        <h4 id="gh-total-stars"><i class="fas fa-spinner fa-spin" style="font-size: 20px;"></i></h4>
+        <p>GitHub Stars Earned</p>
+      </div>
+      <div class="github-stat-card">
+        <i class="fas fa-code-commit"></i>
+        <h4 id="gh-latest-activity" style="font-size: 15px; font-weight: 600; padding: 4px 0;"><i class="fas fa-spinner fa-spin" style="font-size: 20px;"></i></h4>
+        <p>Latest Active Project</p>
+      </div>
+    </div>
+
+    <!-- 100% REAL GITHUB OFFICIAL CONTRIBUTION HEATMAP -->
+    <div class="github-commit-dashboard">
+      <div class="dashboard-header">
+        <h3><i class="fab fa-github"></i> Real-Time Commit & Contribution Activity</h3>
+        <a href="https://github.com/tanaybiswas-exe" target="_blank" style="color: var(--accent); font-size: 13px; text-decoration: none; font-weight: 500;">
+          View Full GitHub Profile <i class="fas fa-external-link-alt" style="font-size: 11px;"></i>
+        </a>
+      </div>
+
+      <!-- EXACT GITHUB HEATMAP SVG LOADER -->
+      <div class="gh-official-box">
+        <img 
+          src="https://ghchart.rshah.org/39d353/tanaybiswas-exe" 
+          alt="Tanay Biswas GitHub Contributions Chart" 
+          class="gh-official-svg-render"
+          id="github-chart-img"
+        >
+      </div>
+    </div>
+
+    <div class="card-container" id="projects-list-container"></div>
+  </section>
+
+  <!-- PROFESSIONAL GET IN TOUCH SECTION -->
+  <section id="contact">
+    <h2 class="title">Get In Touch</h2>
+    <div class="contact-grid">
+      <div class="contact-info-panel">
+        <div class="info-card" onclick="openDirectEmail()" style="cursor: pointer;" title="Send an Email">
+          <i class="fas fa-envelope-open-text"></i>
+          <div>
+            <h4>Direct Email</h4>
+            <p>tanaybiswas705@gmail.com</p>
+          </div>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <h4>Location</h4>
+            <p>Dhaka, Bangladesh</p>
+          </div>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-clock"></i>
+          <div>
+            <h4>Availability</h4>
+            <p>Open for Freelance & Full-time Roles</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-wrapper">
+        <form id="contact-form" onsubmit="handleContactSubmit(event)">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="sender-name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label>Your Email Address</label>
+            <input type="email" id="sender-email" required placeholder="name@domain.com">
+          </div>
+          <div class="form-group">
+            <label>Inquiry Topic / Project Type</label>
+            <select id="sender-topic">
+              <option value="Full-Stack Web Development">Full-Stack Web Development</option>
+              <option value="Generative AI & LLM Integration">Generative AI & LLM Integration</option>
+              <option value="Job / Internship Opportunity">Job / Internship Opportunity</option>
+              <option value="Other Inquiries">Other Inquiries</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message Content</label>
+            <textarea id="sender-message" rows="4" required placeholder="Describe your project proposal or questions..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="contact-submit-btn" style="width: 100%;">Send Direct Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCROLL TO TOP BUTTON -->
+  <div class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" title="Scroll to Top">
+    <i class="fas fa-chevron-up"></i>
+  </div>
+
+  <!-- FLOATING ACTION DOCK -->
+  <div class="floating-action-dock">
+    <div class="dock-btn" onclick="toggleTerminal()" title="Open Interactive CLI Terminal">
+      <i class="fas fa-terminal"></i>
+    </div>
+    <div class="dock-btn" onclick="toggleChatbot()" title="Ask Real AI Assistant">
+      <i class="fas fa-robot"></i>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE TERMINAL / CLI -->
+  <div class="terminal-popup" id="terminal-window">
+    <div class="terminal-header">
+      <div class="dots">
+        <span class="dot-red" onclick="toggleTerminal()"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+      </div>
+      <span>tanay@portfolio-cli:~$</span>
+      <i class="fas fa-times" style="cursor: pointer;" onclick="toggleTerminal()"></i>
+    </div>
+    <div class="terminal-body" id="terminal-output">
+      <p style="color: var(--accent);">Welcome to Tanay Biswas's Interactive CLI v1.0.0</p>
+      <p>Type <span style="color:#fff; font-weight:bold;">'help'</span> to see a list of available commands.</p>
+    </div>
+    <div class="terminal-input-row">
+      <span>&gt;</span>
+      <input type="text" id="terminal-cmd-input" placeholder="Type a command..." onkeydown="handleTerminalCommand(event)">
+    </div>
+  </div>
+
+  <!-- REAL AI PORTFOLIO ASSISTANT BOT (POWERED BY GEMINI) -->
+  <div class="chatbot-popup" id="chatbot-window">
+    <div class="chatbot-header">
+      <h4><i class="fas fa-sparkles"></i> Gemini AI Assistant</h4>
+      <i class="fas fa-times close-btn" style="font-size:16px;" onclick="toggleChatbot()"></i>
+    </div>
+    <div class="chatbot-messages" id="chatbot-msgs">
+      <div class="chat-msg bot">
+        Hi! I'm Tanay's AI assistant powered by Gemini. Ask me anything about his technical stack, projects, education, or career goals!
+      </div>
+    </div>
+    <form class="chatbot-input-row" onsubmit="handleChatbotSubmit(event)">
+      <input type="text" id="chatbot-text-input" placeholder="Ask AI anything..." autocomplete="off">
+      <button type="submit" id="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+    </form>
+  </div>
+
+  <!-- Admin Modal -->
+  <div class="modal" id="admin-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="color: var(--accent);"><i class="fas fa-shield-alt"></i> Control Center (Protected)</h2>
+        <span class="close-btn" onclick="closeAdminModal()">&times;</span>
+      </div>
+
+      <div id="admin-auth-view">
+        <h3 style="margin-bottom: 15px;">Admin Authentication</h3>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="admin-login-email" placeholder="admin@portfolio.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="admin-login-pass" placeholder="******">
+        </div>
+        <button class="btn btn-primary" onclick="loginAdmin()">Unlock Portal</button>
+      </div>
+
+      <div id="admin-dashboard-view" style="display: none;">
+        <div class="admin-tab">
+          <button class="active" onclick="switchAdminTab('profile-tab', this)"><i class="fas fa-user-edit"></i> Profile Settings</button>
+          <button onclick="switchAdminTab('experience-tab', this)"><i class="fas fa-briefcase"></i> Experience</button>
+          <button onclick="switchAdminTab('projects-tab', this)"><i class="fas fa-folder-open"></i> Projects</button>
+          <button onclick="switchAdminTab('skills-tab', this)"><i class="fas fa-tools"></i> Skills</button>
+          <button onclick="switchAdminTab('inbox-tab', this)"><i class="fas fa-envelope"></i> Inbox Messages</button>
+          <button style="margin-left: auto; color: #ff3366;" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div class="admin-section active" id="profile-tab">
+          <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+              <h5>TOTAL UNIQUE VIEWS</h5>
+              <p id="admin-view-count">0</p>
+            </div>
+            <div class="admin-stat-card">
+              <h5>TOTAL PROJECTS</h5>
+              <p id="admin-proj-count">0</p>
+            </div>
+            <div class="admin-stat-card">
+              <h5>INBOX MESSAGES</h5>
+              <p id="admin-inbox-count">0</p>
+            </div>
+          </div>
+
+          <h4>Personal Information & Links</h4>
+          <form id="profile-update-form" onsubmit="saveProfileSettings(event)" style="margin-top: 15px;">
+            <div class="form-group"><label>Full Display Name</label><input type="text" id="prof-name" required></div>
+            <div class="form-group"><label>Hero Tagline / Bio</label><textarea id="prof-tagline" rows="2" required></textarea></div>
+            <div class="form-group"><label>Profile Picture URL</label><input type="url" id="prof-img"></div>
+            <div class="form-group"><label>CV / Resume Download Link</label><input type="url" id="prof-cv"></div>
+            <div class="form-group"><label>About Me: "Who Am I?"</label><textarea id="prof-about-who" rows="2"></textarea></div>
+            <div class="form-group"><label>About Me: "Education"</label><textarea id="prof-about-edu" rows="2"></textarea></div>
+            <div class="form-group"><label>About Me: "Mission"</label><textarea id="prof-about-mission" rows="2"></textarea></div>
+            <h4 style="margin: 20px 0 10px 0;">Social Profiles</h4>
+            <div class="form-group"><label>GitHub Profile URL</label><input type="url" id="prof-github"></div>
+            <div class="form-group"><label>LinkedIn Profile URL</label><input type="url" id="prof-linkedin"></div>
+            <div class="form-group"><label>Facebook / Messenger URL</label><input type="url" id="prof-facebook"></div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Update Profile Information</button>
+          </form>
+        </div>
+
+        <!-- EXPERIENCE TAB -->
+        <div class="admin-section" id="experience-tab">
+          <h4>Add / Update Experience Record</h4>
+          <form id="exp-crud-form" onsubmit="saveExperience(event)" style="margin-top: 15px;">
+            <input type="hidden" id="crud-exp-id">
+            <div class="form-group"><input type="text" id="crud-exp-period" placeholder="e.g. 2025 – Present" required></div>
+            <div class="form-group"><input type="text" id="crud-exp-role" placeholder="Role / Designation" required></div>
+            <div class="form-group"><input type="text" id="crud-exp-company" placeholder="Organization / Company" required></div>
+            <div class="form-group"><textarea id="crud-exp-desc" rows="3" placeholder="Description of your contributions..." required></textarea></div>
+            <button type="submit" class="btn btn-primary" id="exp-save-btn">Save Experience</button>
+          </form>
+
+          <h4 style="margin-top: 30px;">Timeline Records</h4>
+          <table id="admin-experience-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Role</th>
+                <th>Company</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- PROJECTS TAB -->
+        <div class="admin-section" id="projects-tab">
+          <h4>Add / Update Project</h4>
+          <form id="project-crud-form" onsubmit="saveProject(event)" style="margin-top: 15px;">
+            <input type="hidden" id="crud-project-id">
+            <div class="form-group"><input type="text" id="crud-project-title" placeholder="Project Name" required></div>
+            <div class="form-group"><input type="text" id="crud-project-desc" placeholder="Short Description" required></div>
+            <div class="form-group"><input type="text" id="crud-project-image" placeholder="Image URL (Optional)"></div>
+            <div class="form-group"><input type="text" id="crud-project-tags" placeholder="Tags (comma separated, e.g. React, Node)"></div>
+            <div class="form-group"><input type="url" id="crud-project-live" placeholder="Live Demo URL"></div>
+            <div class="form-group"><input type="url" id="crud-project-repo" placeholder="GitHub Repo URL"></div>
+            <button type="submit" class="btn btn-primary" id="project-save-btn">Save & Publish to Cloud</button>
+          </form>
+
+          <h4 style="margin-top: 30px;">Live Projects Database</h4>
+          <table id="admin-projects-table">
+            <thead>
+              <tr>
+                <th>Frontpage</th>
+                <th>Title</th>
+                <th>Live Link</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- SKILLS TAB -->
+        <div class="admin-section" id="skills-tab">
+          <h4>Add New Skill</h4>
+          <div style="display: flex; gap: 10px; margin: 15px 0;">
+            <input type="text" id="new-skill-input" placeholder="e.g. Next.js, Docker" style="flex:1; padding: 10px; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main);">
+            <button class="btn btn-primary" onclick="addSkill()">Add Skill</button>
+          </div>
+          <table id="admin-skills-table">
+            <thead>
+              <tr><th>Skill Title</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- INBOX TAB -->
+        <div class="admin-section" id="inbox-tab">
+          <h4>Direct Messages & Reviews</h4>
+          <table id="admin-messages-table">
+            <thead>
+              <tr><th>Date/Time</th><th>Type / From</th><th>Sender Info</th><th>Content / Message</th><th>Action</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="secret-admin-trigger" onclick="openAdminModal()" title="Admin Terminal">&copy;</span> 2026 Tanay Biswas | Engineered with Glassmorphism & Cloud Architecture
+  </footer>
+
+  <script>
+    // ==========================================
+    // 0. FIREBASE REALTIME CLOUD INTEGRATION
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBlr5JIQGMkB89sXgNZANCu67HHAFbCNVs",
+      authDomain: "my-protfolio-ff565.firebaseapp.com",
+      databaseURL: "https://my-protfolio-ff565-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "my-protfolio-ff565",
+      storageBucket: "my-protfolio-ff565.firebasestorage.app",
+      messagingSenderId: "746673479660",
+      appId: "1:746673479660:web:9add64424a2c4290e0aac9",
+      measurementId: "G-R4GW13PRB8"
+    };
+
+    let db = null;
+    let auth = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      auth = firebase.auth();
+    } catch(err) {
+      console.warn("Firebase initialization warning:", err);
+    }
+
+    // --- SECURE AUTHENTICATION LISTENER ---
+    if (auth) {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById('admin-auth-view').style.display = 'none';
+          document.getElementById('admin-dashboard-view').style.display = 'block';
+          renderProfile();
+          renderExperience();
+          renderProjects();
+          renderSkills();
+          renderInbox();
+        } else {
+          document.getElementById('admin-auth-view').style.display = 'block';
+          document.getElementById('admin-dashboard-view').style.display = 'none';
+        }
+      });
+    }
+
+    // --- GEMINI API CONFIGURATION ---
+    const GEMINI_API_KEY = "AIzaSyBPleEgRjV1M4zQsJFHodagBWU7F6lIjgo";
+
+    // --- LIVE VISITOR COUNTER ENGINE ---
+    function initVisitorCounter() {
+      if (!db) {
+        const localViews = (parseInt(localStorage.getItem('portfolio_local_views')) || 100) + 1;
+        localStorage.setItem('portfolio_local_views', localViews);
+        updateViewDisplays(localViews);
+        return;
+      }
+
+      const viewsRef = db.ref('portfolio/analytics/visitorCount');
+      const hasVisited = sessionStorage.getItem('visited_session');
+
+      if (!hasVisited) {
+        viewsRef.transaction((currentCount) => {
+          return (currentCount || 0) + 1;
+        });
+        sessionStorage.setItem('visited_session', 'true');
+      }
+
+      viewsRef.on('value', (snapshot) => {
+        const total = snapshot.val() || 1;
+        updateViewDisplays(total);
+      });
+    }
+
+    function updateViewDisplays(count) {
+      const formatted = Number(count).toLocaleString();
+      const adminBadge = document.getElementById('admin-view-count');
+      if (adminBadge) adminBadge.innerText = formatted;
+    }
+
+    // --- DIRECT EMAIL COMPOSER ---
+    function openDirectEmail() {
+      const email = "tanaybiswas705@gmail.com";
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        window.location.href = `mailto:${email}`;
+      } else {
+        window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`, '_blank');
+      }
+    }
+
+    // --- SCROLL TO TOP FUNCTION ---
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- SCROLLSPY & SCROLL-TO-TOP LISTENER ---
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY;
+      const scrollBtn = document.getElementById('scrollTopBtn');
+      
+      if (scrollPos > 300) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
+      }
+
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.nav-link');
+
+      let currentSection = "";
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 150;
+        const sectionHeight = section.offsetHeight;
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${currentSection}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // --- GITHUB REAL-TIME STATS ENGINE ---
+    async function fetchGitHubStats() {
+      const username = "tanaybiswas-exe";
+      const cacheBust = Date.now();
+      
+      const chartImg = document.getElementById('github-chart-img');
+      if (chartImg) {
+        chartImg.src = `https://ghchart.rshah.org/39d353/${username}?ts=${cacheBust}`;
+      }
+
+      try {
+        const userRes = await fetch(`https://api.github.com/users/${username}?ts=${cacheBust}`);
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          document.getElementById('gh-public-repos').innerText = userData.public_repos || "1";
+        }
+
+        const reposRes = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=10&ts=${cacheBust}`);
+        if (reposRes.ok) {
+          const reposData = await reposRes.json();
+          const totalStars = reposData.reduce((acc, r) => acc + (r.stargazers_count || 0), 0);
+          document.getElementById('gh-total-stars').innerText = totalStars;
+
+          if (reposData.length > 0) {
+            document.getElementById('gh-latest-activity').innerText = reposData[0].name;
+          }
+        }
+      } catch (err) {
+        console.warn("GitHub live fetch notice:", err);
+        document.getElementById('gh-public-repos').innerText = "1";
+        document.getElementById('gh-total-stars').innerText = "1★";
+        document.getElementById('gh-latest-activity').innerText = "-BrainSpark";
+      }
+    }
+
+    // --- MOBILE MENU HANDLERS ---
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('nav-links');
+      navLinks.classList.toggle('active');
+    }
+
+    function closeMobileMenu() {
+      const navLinks = document.getElementById('nav-links');
+      navLinks.classList.remove('active');
+    }
+
+    // --- 1. THEME ENGINE ---
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('portfolio_theme', themeName);
+      const selector = document.getElementById('theme-selector');
+      if (selector) selector.value = themeName;
+    }
+    const savedTheme = localStorage.getItem('portfolio_theme') || 'cyan';
+    changeTheme(savedTheme);
+
+    // --- 2. PERSONAL PROFILE STATE ---
+    const defaultProfile = {
+      name: "Tanay Biswas",
+      tagline: "Creative Software Engineer | Full-Stack Architect | Building scalable intelligent applications and interfaces.",
+      image: "https://i.ibb.co/h1r448mk/20260512-103126-2.jpg",
+      cvUrl: "https://drive.google.com/uc?export=download&id=16lygwPaPP372mk_LW5ge8Hp37RntGQtb",
+      aboutWho: "Passionate Software Engineering student dedicated to architecting modern web apps, cloud integrations, and exploring generative AI tools.",
+      aboutEdu: "B.Sc. in Software Engineering at Daffodil International University (DIU). Emphasizing algorithms, state architecture, and software design patterns.",
+      aboutMission: "Deliver ultra-fast high-standard software solutions, maintain open-source projects, and contribute meaningfully to the developer ecosystem.",
+      github: "https://github.com/tanaybiswas-exe",
+      linkedin: "https://linkedin.com",
+      facebook: "https://facebook.com"
+    };
+
+    let userProfile = JSON.parse(localStorage.getItem('portfolio_profile')) || defaultProfile;
+
+    function renderProfile() {
+      document.getElementById('nav-brand-name').innerText = userProfile.name;
+      document.getElementById('hero-display-name').innerText = userProfile.name;
+      document.getElementById('doc-title').innerText = `${userProfile.name} | Software Engineer Portfolio`;
+      document.getElementById('hero-tagline').innerText = userProfile.tagline;
+      document.getElementById('hero-profile-img').src = userProfile.image;
+      document.getElementById('cv-download-btn').href = userProfile.cvUrl || '#';
+
+      document.getElementById('about-who-text').innerText = userProfile.aboutWho;
+      document.getElementById('about-edu-text').innerText = userProfile.aboutEdu;
+      document.getElementById('about-mission-text').innerText = userProfile.aboutMission;
+
+      const socialsContainer = document.getElementById('social-links-container');
+      socialsContainer.innerHTML = `
+        ${userProfile.github ? `<a href="${userProfile.github}" target="_blank"><i class="fab fa-github"></i></a>` : ''}
+        ${userProfile.linkedin ? `<a href="${userProfile.linkedin}" target="_blank"><i class="fab fa-linkedin-in"></i></a>` : ''}
+        ${userProfile.facebook ? `<a href="${userProfile.facebook}" target="_blank"><i class="fab fa-facebook-f"></i></a>` : ''}
+      `;
+
+      document.getElementById('prof-name').value = userProfile.name;
+      document.getElementById('prof-tagline').value = userProfile.tagline;
+      document.getElementById('prof-img').value = userProfile.image;
+      document.getElementById('prof-cv').value = userProfile.cvUrl;
+      document.getElementById('prof-about-who').value = userProfile.aboutWho;
+      document.getElementById('prof-about-edu').value = userProfile.aboutEdu;
+      document.getElementById('prof-about-mission').value = userProfile.aboutMission;
+      document.getElementById('prof-github').value = userProfile.github;
+      document.getElementById('prof-linkedin').value = userProfile.linkedin;
+      document.getElementById('prof-facebook').value = userProfile.facebook;
+    }
+
+    function saveProfileSettings(e) {
+      e.preventDefault();
+      userProfile = {
+        name: document.getElementById('prof-name').value,
+        tagline: document.getElementById('prof-tagline').value,
+        image: document.getElementById('prof-img').value,
+        cvUrl: document.getElementById('prof-cv').value,
+        aboutWho: document.getElementById('prof-about-who').value,
+        aboutEdu: document.getElementById('prof-about-edu').value,
+        aboutMission: document.getElementById('prof-about-mission').value,
+        github: document.getElementById('prof-github').value,
+        linkedin: document.getElementById('prof-linkedin').value,
+        facebook: document.getElementById('prof-facebook').value
+      };
+
+      if (db) {
+        db.ref('portfolio/profile').set(userProfile);
+      }
+      localStorage.setItem('portfolio_profile', JSON.stringify(userProfile));
+      renderProfile();
+      alert('Personal details synced to live server!');
+    }
+
+    // --- 3. TIMELINE, PROJECTS & SKILLS DATA ---
+    const initialExperience = [
+      {
+        id: "exp_1",
+        period: "2025 – Present",
+        role: "Web Developer & SWE Student",
+        company: "Daffodil International University",
+        description: "Pursuing B.Sc. in Software Engineering while designing responsive interfaces, building lightweight web applications, and exploring modern frontend tools."
+      },
+      {
+        id: "exp_2",
+        period: "2024 – 2025",
+        role: "C Programming & Problem Solving",
+        company: "Foundation Track",
+        description: "Built core programming fundamentals, algorithmic logic, and structured problem-solving skills using the C language."
+      }
+    ];
+
+    const initialProjects = [
+      {
+        id: "default_1",
+        title: "BrainSpark AI",
+        description: "24/7 AI-powered development partner featuring live prompt streaming, automatic code diagnostics, and dynamic component layout generators.",
+        image: "",
+        tags: ["Gemini AI", "Cloud Setup", "Full-Stack"],
+        liveUrl: "https://brainspark-ai.netlify.app/",
+        repoUrl: "https://github.com/tanaybiswas-exe"
+      },
+      {
+        id: "default_2",
+        title: "Real-Time Multiplayer Tic Tac Toe",
+        description: "Interactive real-time multiplayer grid game utilizing Firebase Realtime state synchronization and reactive CSS motion modules.",
+        image: "",
+        tags: ["Firebase RTDB", "Game Loop", "Vanilla JS"],
+        liveUrl: "https://tictactoeapp-3e6dd2.tiiny.site",
+        repoUrl: "https://github.com/tanaybiswas-exe"
+      }
+    ];
+
+    const initialSkills = ["HTML5 / Canvas", "CSS3 / Modern Flex", "JavaScript (ES6+)", "Python", "C & C++", "Firebase / Firestore", "Git & GitHub", "Cloud APIs"];
+
+    let localExperience = JSON.parse(localStorage.getItem('portfolio_experience')) || initialExperience;
+    let localProjects = JSON.parse(localStorage.getItem('portfolio_projects')) || initialProjects;
+    let localSkills = JSON.parse(localStorage.getItem('portfolio_skills')) || initialSkills;
+    let inboxMessages = JSON.parse(localStorage.getItem('portfolio_messages')) || [];
+
+    function getProjectPreview(proj) {
+      if (proj.image && proj.image.trim() !== '') {
+        return proj.image;
+      }
+      if (proj.liveUrl && proj.liveUrl.startsWith('http')) {
+        return `https://image.thum.io/get/width/600/crop/800/${proj.liveUrl}`;
+      }
+      return 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80';
+    }
+
+    // --- 4. RENDER FUNCTIONS ---
+    function renderExperience() {
+      const container = document.getElementById('timeline-list-container');
+      const tableBody = document.querySelector('#admin-experience-table tbody');
+      container.innerHTML = "";
+      tableBody.innerHTML = "";
+
+      localExperience.forEach((exp) => {
+        const item = document.createElement('div');
+        item.className = "timeline-item";
+        item.innerHTML = `
+          <div class="timeline-period">${exp.period}</div>
+          <div class="timeline-role">${exp.role}</div>
+          <div class="timeline-company">${exp.company}</div>
+          <div class="timeline-desc">${exp.description}</div>
+        `;
+        container.appendChild(item);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${exp.period}</strong></td>
+          <td>${exp.role}</td>
+          <td>${exp.company}</td>
+          <td>
+            <button onclick="editExperience('${exp.id}')" style="color:var(--accent); background:none; border:none; cursor:pointer; margin-right:10px;"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick="deleteExperience('${exp.id}')" style="color:#ff3366; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projects-list-container');
+      const tableBody = document.querySelector('#admin-projects-table tbody');
+      const adminProjCount = document.getElementById('admin-proj-count');
+      
+      container.innerHTML = "";
+      tableBody.innerHTML = "";
+      if (adminProjCount) adminProjCount.innerText = localProjects.length;
+
+      localProjects.forEach((proj) => {
+        const directLink = proj.liveUrl || proj.repoUrl || "#";
+        const fallbackImg = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80';
+        const projectImage = getProjectPreview(proj);
+
+        const card = document.createElement('div');
+        card.className = "card";
+        card.innerHTML = `
+          <a href="${directLink}" target="_blank" class="project-clickable-area" title="Click to view live project">
+            <img src="${projectImage}" class="project-thumb" alt="${proj.title}" onerror="this.src='${fallbackImg}'">
+            <h3>${proj.title} <i class="fas fa-external-link-alt" style="font-size:14px; color:var(--accent);"></i></h3>
+          </a>
+          <p>${proj.description}</p>
+          <div class="tags">${(proj.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+          <div class="project-links">
+            ${proj.liveUrl ? `<a href="${proj.liveUrl}" target="_blank"><i class="fas fa-play-circle"></i> Live Demo</a>` : ''}
+            ${proj.repoUrl ? `<a href="${proj.repoUrl}" target="_blank"><i class="fab fa-github"></i> Repository</a>` : ''}
+          </div>
+          <div class="rating-box">
+            <div class="stars" style="display:flex; gap:6px; margin-bottom:8px;">
+              <i class="fas fa-star" onclick="rateStar(this, 1)"></i>
+              <i class="fas fa-star" onclick="rateStar(this, 2)"></i>
+              <i class="fas fa-star" onclick="rateStar(this, 3)"></i>
+              <i class="fas fa-star" onclick="rateStar(this, 4)"></i>
+              <i class="fas fa-star" onclick="rateStar(this, 5)"></i>
+            </div>
+            <input type="text" placeholder="Your Name" class="reviewer-name-input" style="width:100%; padding:6px 10px; background:var(--input-bg); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:12px; margin-bottom:6px; outline:none;">
+            <input type="email" placeholder="Your Email (Optional)" class="reviewer-email-input" style="width:100%; padding:6px 10px; background:var(--input-bg); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:12px; margin-bottom:6px; outline:none;">
+            <input type="text" placeholder="Drop quick advice or feedback..." class="project-feedback-input" style="width:100%; padding:6px 10px; background:var(--input-bg); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:12px; margin-bottom:6px; outline:none;">
+            <button onclick="submitReview(this, '${proj.title}')" style="background:var(--bg-card); border:1px solid var(--accent); color:var(--accent); padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;">Transmit Review</button>
+          </div>
+        `;
+        container.appendChild(card);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <a href="${directLink}" target="_blank">
+              <img src="${projectImage}" class="table-thumb" alt="${proj.title}" onerror="this.src='${fallbackImg}'">
+            </a>
+          </td>
+          <td><strong>${proj.title}</strong></td>
+          <td>${proj.liveUrl ? `<a href="${proj.liveUrl}" target="_blank" style="color:var(--accent);"><i class="fas fa-external-link-alt"></i> Open</a>` : '<span style="color:var(--text-muted);">-</span>'}</td>
+          <td>
+            <button onclick="editProject('${proj.id}')" style="color:var(--accent); background:none; border:none; cursor:pointer; margin-right:10px;"><i class="fas fa-edit"></i> Edit</button>
+            <button onclick="deleteProject('${proj.id}')" style="color:#ff3366; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderSkills() {
+      const container = document.getElementById('skills-list-container');
+      const tableBody = document.querySelector('#admin-skills-table tbody');
+      container.innerHTML = "";
+      tableBody.innerHTML = "";
+
+      localSkills.forEach((skill, index) => {
+        const badge = document.createElement('div');
+        badge.className = "skill-badge";
+        badge.innerText = skill;
+        container.appendChild(badge);
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${skill}</td>
+          <td><button onclick="deleteSkill(${index})" style="color:#ff3366; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function renderInbox() {
+      const tbody = document.querySelector('#admin-messages-table tbody');
+      const adminInboxCount = document.getElementById('admin-inbox-count');
+      if (adminInboxCount) adminInboxCount.innerText = inboxMessages.length;
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      
+      if (inboxMessages.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>No messages or reviews in inbox yet.</td></tr>";
+        return;
+      }
+
+      inboxMessages.forEach((msg, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><small style="color:var(--text-muted);">${msg.timestamp || 'Recent'}</small></td>
+          <td><strong style="color:var(--accent);">${msg.name}</strong></td>
+          <td>${msg.email && msg.email.includes('@') ? `<a href="mailto:${msg.email}" style="color:var(--text-main);">${msg.email}</a>` : `<span style="color:#ffea00;">${msg.email || 'N/A'}</span>`}</td>
+          <td>${msg.message}</td>
+          <td><button onclick="deleteMessage(${idx})" style="color:#ff3366; background:none; border:none; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // --- 5. REALTIME SYNC LISTENERS ---
+    function setupCloudListeners() {
+      if (!db) return;
+
+      db.ref('portfolio/experience').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          localExperience = Array.isArray(data) ? data : Object.values(data);
+          localStorage.setItem('portfolio_experience', JSON.stringify(localExperience));
+          renderExperience();
+        }
+      });
+
+      db.ref('portfolio/projects').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          localProjects = Array.isArray(data) ? data : Object.values(data);
+        } else {
+          localProjects = initialProjects;
+        }
+        localStorage.setItem('portfolio_projects', JSON.stringify(localProjects));
+        renderProjects();
+      });
+
+      db.ref('portfolio/skills').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          localSkills = Array.isArray(data) ? data : Object.values(data);
+          localStorage.setItem('portfolio_skills', JSON.stringify(localSkills));
+          renderSkills();
+        }
+      });
+
+      db.ref('portfolio/profile').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          userProfile = data;
+          localStorage.setItem('portfolio_profile', JSON.stringify(userProfile));
+          renderProfile();
+        }
+      });
+
+      db.ref('portfolio/messages').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          inboxMessages = Object.values(data).reverse();
+          localStorage.setItem('portfolio_messages', JSON.stringify(inboxMessages));
+          renderInbox();
+        }
+      });
+    }
+
+    // --- 6. CLOUD-ENABLED CRUD HANDLERS ---
+    function saveExperience(e) {
+      e.preventDefault();
+      const id = document.getElementById('crud-exp-id').value || 'exp_' + Date.now();
+      const period = document.getElementById('crud-exp-period').value;
+      const role = document.getElementById('crud-exp-role').value;
+      const company = document.getElementById('crud-exp-company').value;
+      const desc = document.getElementById('crud-exp-desc').value;
+
+      const expData = { id, period, role, company, description: desc };
+
+      if (db) {
+        db.ref('portfolio/experience/' + id).set(expData)
+          .then(() => alert('Experience record saved to live database!'))
+          .catch(err => alert('Cloud Save Failed: ' + err.message));
+      } else {
+        const existingIdx = localExperience.findIndex(item => item.id === id);
+        if (existingIdx > -1) localExperience[existingIdx] = expData;
+        else localExperience.unshift(expData);
+        localStorage.setItem('portfolio_experience', JSON.stringify(localExperience));
+        renderExperience();
+        alert('Experience saved locally.');
+      }
+
+      document.getElementById('exp-crud-form').reset();
+      document.getElementById('crud-exp-id').value = '';
+      document.getElementById('exp-save-btn').innerText = "Save Experience";
+    }
+
+    function editExperience(id) {
+      const exp = localExperience.find(item => item.id === id);
+      if (!exp) return;
+      document.getElementById('crud-exp-id').value = exp.id;
+      document.getElementById('crud-exp-period').value = exp.period;
+      document.getElementById('crud-exp-role').value = exp.role;
+      document.getElementById('crud-exp-company').value = exp.company;
+      document.getElementById('crud-exp-desc').value = exp.description;
+      document.getElementById('exp-save-btn').innerText = "Update & Sync";
+    }
+
+    function deleteExperience(id) {
+      if (!confirm('Delete this experience record?')) return;
+      if (db) {
+        db.ref('portfolio/experience/' + id).remove();
+      } else {
+        localExperience = localExperience.filter(item => item.id !== id);
+        localStorage.setItem('portfolio_experience', JSON.stringify(localExperience));
+        renderExperience();
+      }
+    }
+
+    function saveProject(e) {
+      e.preventDefault();
+      const id = document.getElementById('crud-project-id').value || 'proj_' + Date.now();
+      const title = document.getElementById('crud-project-title').value;
+      const desc = document.getElementById('crud-project-desc').value;
+      const img = document.getElementById('crud-project-image').value;
+      const tags = document.getElementById('crud-project-tags').value.split(',').map(s => s.trim()).filter(Boolean);
+      const live = document.getElementById('crud-project-live').value;
+      const repo = document.getElementById('crud-project-repo').value;
+
+      const projectData = { id, title, description: desc, image: img, tags, liveUrl: live, repoUrl: repo };
+      
+      if (db) {
+        db.ref('portfolio/projects/' + id).set(projectData)
+          .then(() => alert('Project saved & live instantly across the web!'))
+          .catch(err => alert('Cloud Save Failed: ' + err.message));
+      } else {
+        const existingIndex = localProjects.findIndex(p => p.id === id);
+        if (existingIndex > -1) localProjects[existingIndex] = projectData;
+        else localProjects.unshift(projectData);
+        localStorage.setItem('portfolio_projects', JSON.stringify(localProjects));
+        renderProjects();
+        alert('Saved locally.');
+      }
+
+      document.getElementById('project-crud-form').reset();
+      document.getElementById('crud-project-id').value = '';
+    }
+
+    function editProject(id) {
+      const proj = localProjects.find(p => p.id === id);
+      if (!proj) return;
+      document.getElementById('crud-project-id').value = proj.id;
+      document.getElementById('crud-project-title').value = proj.title;
+      document.getElementById('crud-project-desc').value = proj.description;
+      document.getElementById('crud-project-image').value = proj.image || '';
+      document.getElementById('crud-project-tags').value = (proj.tags || []).join(', ');
+      document.getElementById('crud-project-live').value = proj.liveUrl || '';
+      document.getElementById('crud-project-repo').value = proj.repoUrl || '';
+      document.getElementById('project-save-btn').innerText = "Update & Sync";
+    }
+
+    function deleteProject(id) {
+      if (!confirm('Delete this project record from live web?')) return;
+      if (db) {
+        db.ref('portfolio/projects/' + id).remove();
+      } else {
+        localProjects = localProjects.filter(p => p.id !== id);
+        localStorage.setItem('portfolio_projects', JSON.stringify(localProjects));
+        renderProjects();
+      }
+    }
+
+    function addSkill() {
+      const input = document.getElementById('new-skill-input');
+      const val = input.value.trim();
+      if (!val) return;
+      localSkills.push(val);
+      if (db) db.ref('portfolio/skills').set(localSkills);
+      else localStorage.setItem('portfolio_skills', JSON.stringify(localSkills));
+      input.value = "";
+      renderSkills();
+    }
+
+    function deleteSkill(index) {
+      localSkills.splice(index, 1);
+      if (db) db.ref('portfolio/skills').set(localSkills);
+      else localStorage.setItem('portfolio_skills', JSON.stringify(localSkills));
+      renderSkills();
+    }
+
+    function deleteMessage(index) {
+      inboxMessages.splice(index, 1);
+      if (db) db.ref('portfolio/messages').set(inboxMessages);
+      else localStorage.setItem('portfolio_messages', JSON.stringify(inboxMessages));
+      renderInbox();
+    }
+
+    // --- 7. DUAL TRANSMISSION (FIREBASE + EMAILJS) ---
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('contact-submit-btn');
+      const name = document.getElementById('sender-name').value.trim();
+      const email = document.getElementById('sender-email').value.trim();
+      const topic = document.getElementById('sender-topic').value;
+      const message = document.getElementById('sender-message').value.trim();
+
+      submitBtn.innerText = "Transmitting Message...";
+      submitBtn.disabled = true;
+
+      const msgId = 'msg_' + Date.now();
+      const fullMessageText = `[Topic: ${topic}]\n\n${message}`;
+      const newMsg = { id: msgId, name, email, message: fullMessageText, timestamp: new Date().toLocaleString() };
+
+      if (db) {
+        db.ref('portfolio/messages/' + msgId).set(newMsg);
+      } else {
+        inboxMessages.unshift(newMsg);
+        localStorage.setItem('portfolio_messages', JSON.stringify(inboxMessages));
+        renderInbox();
+      }
+
+      const templateParams = {
+        from_name: name,
+        name: name,
+        reply_to: email,
+        email: email,
+        message: fullMessageText,
+        title: `Portfolio Inquiry: ${topic} from ${name}`
+      };
+
+      emailjs.send('service_qjr5wtp', 'template_5csbwed', templateParams)
+        .then(() => {
+          alert('Message transmitted successfully & stored in Cloud!');
+          document.getElementById('contact-form').reset();
+          submitBtn.innerText = "Message Sent ✓";
+          setTimeout(() => { submitBtn.innerText = "Send Direct Message"; submitBtn.disabled = false; }, 3000);
+        })
+        .catch(() => {
+          alert('Message saved to live Admin Inbox!');
+          document.getElementById('contact-form').reset();
+          submitBtn.innerText = "Message Saved ✓";
+          setTimeout(() => { submitBtn.innerText = "Send Direct Message"; submitBtn.disabled = false; }, 3000);
+        });
+    }
+
+    // --- 8. SECURE ADMIN CONTROLS (WITH FIREBASE AUTH) ---
+    function openAdminModal() { 
+      document.getElementById('admin-modal').style.display = 'block';
+    }
+    function closeAdminModal() { 
+      document.getElementById('admin-modal').style.display = 'none';
+      if (window.location.hash === '#admin') history.pushState("", document.title, window.location.pathname);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        openAdminModal();
+      }
+    });
+
+    function loginAdmin() {
+      const email = document.getElementById('admin-login-email').value;
+      const pass = document.getElementById('admin-login-pass').value;
+      const btn = document.querySelector('#admin-auth-view button');
+
+      if (!email || !pass) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
+      btn.innerText = "Authenticating...";
+      btn.disabled = true;
+
+      if(auth) {
+        auth.signInWithEmailAndPassword(email, pass)
+          .then((userCredential) => {
+            btn.innerText = "Unlock Portal";
+            btn.disabled = false;
+          })
+          .catch((error) => {
+            alert("Login Failed: " + error.message);
+            btn.innerText = "Unlock Portal";
+            btn.disabled = false;
+          });
+      } else {
+        alert("Firebase Auth is not initialized properly.");
+      }
+    }
+
+    function logoutAdmin() {
+      if(auth) {
+        auth.signOut().then(() => {
+          closeAdminModal();
+        }).catch((error) => {
+          alert("Logout Error: " + error.message);
+        });
+      }
+    }
+
+    function switchAdminTab(tabId, buttonElem) {
+      document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.admin-tab button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (buttonElem) buttonElem.classList.add('active');
+      if (tabId === 'inbox-tab') renderInbox();
+    }
+
+    // --- 9. STAR RATING & PROJECT REVIEW ---
+    function rateStar(starElem, rating) {
+      const stars = starElem.parentElement.querySelectorAll('i');
+      stars.forEach((s, idx) => {
+        if (idx < rating) {
+          s.style.color = "#ffea00";
+          s.style.textShadow = "0 0 10px #ffea00";
+        } else {
+          s.style.color = "rgba(125,125,125,0.4)";
+          s.style.textShadow = "none";
+        }
+      });
+      starElem.parentElement.setAttribute('data-rating', rating);
+    }
+
+    function submitReview(btn, projectTitle) {
+      const box = btn.closest('.rating-box');
+      const rating = box.querySelector('.stars').getAttribute('data-rating') || "5";
+      const reviewerName = box.querySelector('.reviewer-name-input').value.trim() || 'Anonymous Reviewer';
+      const reviewerEmail = box.querySelector('.reviewer-email-input').value.trim() || 'No Email';
+      const feedback = box.querySelector('.project-feedback-input').value.trim();
+
+      if (!feedback && !box.querySelector('.stars').getAttribute('data-rating')) {
+        alert("Please select a star rating or write feedback before submitting.");
+        return;
+      }
+
+      btn.innerText = "Transmitting...";
+      btn.disabled = true;
+
+      const reviewId = 'review_' + Date.now();
+      const reviewItem = {
+        id: reviewId,
+        name: `${reviewerName} (${rating}★ on ${projectTitle})`,
+        email: reviewerEmail,
+        message: feedback || 'No written comment provided.',
+        timestamp: new Date().toLocaleString()
+      };
+
+      if (db) {
+        db.ref('portfolio/messages/' + reviewId).set(reviewItem);
+      } else {
+        inboxMessages.unshift(reviewItem);
+        localStorage.setItem('portfolio_messages', JSON.stringify(inboxMessages));
+        renderInbox();
+      }
+
+      const templateParams = {
+        from_name: reviewerName,
+        name: `${reviewerName} [${rating}★ on ${projectTitle}]`,
+        reply_to: reviewerEmail !== 'No Email' ? reviewerEmail : 'feedback@portfolio.live',
+        email: reviewerEmail,
+        message: `Project: ${projectTitle}\nRating: ${rating} / 5 Stars\nReviewer: ${reviewerName} (${reviewerEmail})\nFeedback: ${feedback || 'No written comment'}`,
+        title: `★ New Project Review from ${reviewerName}`
+      };
+
+      emailjs.send('service_qjr5wtp', 'template_5csbwed', templateParams)
+        .catch(err => console.warn('EmailJS Review transmission warning:', err));
+
+      alert(`Thank you, ${reviewerName}! Your review has been submitted and synced live.`);
+      box.querySelector('.reviewer-name-input').value = "";
+      box.querySelector('.reviewer-email-input').value = "";
+      box.querySelector('.project-feedback-input').value = "";
+      btn.innerText = "Transmitted ✓";
+      setTimeout(() => { btn.innerText = "Transmit Review"; btn.disabled = false; }, 2500);
+    }
+
+    // --- 10. INTERACTIVE TERMINAL / CLI CONTROLLER ---
+    function toggleTerminal() {
+      const term = document.getElementById('terminal-window');
+      const chat = document.getElementById('chatbot-window');
+      chat.classList.remove('active');
+      term.classList.toggle('active');
+      if (term.classList.contains('active')) {
+        document.getElementById('terminal-cmd-input').focus();
+      }
+    }
+
+    function handleTerminalCommand(e) {
+      if (e.key !== 'Enter') return;
+      const input = document.getElementById('terminal-cmd-input');
+      const output = document.getElementById('terminal-output');
+      const rawCmd = input.value.trim();
+      input.value = '';
+      if (!rawCmd) return;
+
+      const cmd = rawCmd.toLowerCase();
+      output.innerHTML += `<p><span style="color:var(--accent);">tanay@portfolio:~$</span> ${rawCmd}</p>`;
+
+      if (cmd === 'help') {
+        output.innerHTML += `
+          <p><b style="color:#fff;">Available Commands:</b></p>
+          <p>- <b>about</b> : Read full biography and mission</p>
+          <p>- <b>experience</b> : View work & academic timeline</p>
+          <p>- <b>skills</b> : List all technical proficiencies</p>
+          <p>- <b>projects</b> : Display featured works and URLs</p>
+          <p>- <b>contact</b> : Get social and inquiry links</p>
+          <p>- <b>cv / resume</b> : Download Tanay's official CV</p>
+          <p>- <b>matrix</b> : Trigger full-screen Hacker Matrix animation</p>
+          <p>- <b>theme [cyan|light]</b> : Switch UI color themes</p>
+          <p>- <b>clear</b> : Reset terminal output window</p>
+          <p>- <b>exit</b> : Close CLI terminal</p>
+        `;
+      } else if (cmd === 'about') {
+        output.innerHTML += `<p>${userProfile.aboutWho}</p><p><b>Edu:</b> ${userProfile.aboutEdu}</p>`;
+      } else if (cmd === 'experience') {
+        localExperience.forEach(exp => {
+          output.innerHTML += `<p>💼 <b>${exp.role}</b> @ ${exp.company} (${exp.period})</p>`;
+        });
+      } else if (cmd === 'skills') {
+        output.innerHTML += `<p><b>Skills:</b> ${localSkills.join(', ')}</p>`;
+      } else if (cmd === 'projects') {
+        localProjects.forEach(p => {
+          output.innerHTML += `<p>🚀 <b>${p.title}</b>: ${p.liveUrl || p.repoUrl || 'N/A'}</p>`;
+        });
+      } else if (cmd === 'contact') {
+        output.innerHTML += `
+          <p>Email: tanaybiswas705@gmail.com</p>
+          <p>GitHub: ${userProfile.github}</p>
+          <p>LinkedIn: ${userProfile.linkedin}</p>
+        `;
+      } else if (cmd === 'cv' || cmd === 'resume') {
+        if (userProfile.cvUrl && userProfile.cvUrl !== '#') {
+          output.innerHTML += `<p style="color:#27c93f;">Initiating CV download...</p>`;
+          window.open(userProfile.cvUrl, '_blank');
+        } else {
+          output.innerHTML += `<p style="color:#ffbd2e;">CV link is currently not set in profile settings.</p>`;
+        }
+      } else if (cmd === 'matrix') {
+        output.innerHTML += `<p style="color:#27c93f;">Entering the Matrix... (Click anywhere on screen to exit)</p>`;
+        startMatrix();
+      } else if (cmd.startsWith('theme ')) {
+        const t = cmd.split(' ')[1];
+        if (t === 'cyan' || t === 'light') {
+          changeTheme(t);
+          output.innerHTML += `<p>Theme updated to ${t}.</p>`;
+        } else {
+          output.innerHTML += `<p style="color:#ff3366;">Invalid theme. Use 'theme cyan' or 'theme light'</p>`;
+        }
+      } else if (cmd === 'clear') {
+        output.innerHTML = '';
+      } else if (cmd === 'exit') {
+        toggleTerminal();
+      } else {
+        output.innerHTML += `<p style="color:#ff3366;">Command not found: '${rawCmd}'. Type 'help' for available commands.</p>`;
+      }
+      output.scrollTop = output.scrollHeight;
+    }
+
+    // --- MATRIX DIGITAL RAIN ENGINE ---
+    let matrixInterval = null;
+    function startMatrix() {
+      const canvas = document.getElementById('matrix-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.style.display = 'block';
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const chars = '01ABCDEF0123456789$#@%&*+-/<>~ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ';
+      const fontSize = 16;
+      const columns = Math.floor(canvas.width / fontSize);
+      const drops = Array(columns).fill(1);
+
+      if (matrixInterval) clearInterval(matrixInterval);
+
+      matrixInterval = setInterval(() => {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#00ff66';
+        ctx.font = `${fontSize}px monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars.charAt(Math.floor(Math.random() * chars.length));
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }, 33);
+    }
+
+    function stopMatrix() {
+      const canvas = document.getElementById('matrix-canvas');
+      canvas.style.display = 'none';
+      if (matrixInterval) clearInterval(matrixInterval);
+    }
+
+    window.addEventListener('resize', () => {
+      const canvas = document.getElementById('matrix-canvas');
+      if (canvas.style.display === 'block') {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+    });
+
+    // --- 11. MULTI-TURN GEMINI AI CHAT ENGINE ---
+    let chatConversationHistory = [];
+
+    function toggleChatbot() {
+      const chat = document.getElementById('chatbot-window');
+      const term = document.getElementById('terminal-window');
+      term.classList.remove('active');
+      chat.classList.toggle('active');
+      if (chat.classList.contains('active')) {
+        document.getElementById('chatbot-text-input').focus();
+      }
+    }
+
+    async function handleChatbotSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatbot-text-input');
+      const sendBtn = document.getElementById('chat-send-btn');
+      const msgBox = document.getElementById('chatbot-msgs');
+      const query = input.value.trim();
+      if (!query) return;
+
+      msgBox.innerHTML += `<div class="chat-msg user">${escapeHTML(query)}</div>`;
+      input.value = '';
+      msgBox.scrollTop = msgBox.scrollHeight;
+
+      const loadingBubble = document.createElement('div');
+      loadingBubble.className = 'chat-msg bot';
+      loadingBubble.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Thinking...';
+      msgBox.appendChild(loadingBubble);
+      msgBox.scrollTop = msgBox.scrollHeight;
+
+      sendBtn.disabled = true;
+
+      try {
+        const responseText = await queryGeminiAPI(query);
+        loadingBubble.innerText = responseText;
+      } catch (err) {
+        console.error("Gemini API Pipeline Notice:", err);
+        loadingBubble.innerText = getLocalAIResponse(query);
+      } finally {
+        sendBtn.disabled = false;
+        msgBox.scrollTop = msgBox.scrollHeight;
+      }
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    async function queryGeminiAPI(userQuestion) {
+      if (!GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIzaSy")) {
+        return getLocalAIResponse(userQuestion);
+      }
+
+      const systemInstruction = `
+You are Gemini, acting as the intelligent, friendly, authentic, and witty personal representative for Tanay Biswas on his portfolio website.
+Speak naturally, accurately, and concisely. Keep answers to 2-4 sentences max so it reads like a crisp chat.
+
+TANAY'S OFFICIAL PORTFOLIO CONTEXT:
+- Developer Name: ${userProfile.name}
+- Headline: ${userProfile.tagline}
+- About: ${userProfile.aboutWho}
+- Education: ${userProfile.aboutEdu}
+- Technical Skills: ${localSkills.join(', ')}
+- Work History: ${localExperience.map(e => `${e.role} at ${e.company} (${e.period}) - ${e.description}`).join('; ')}
+- Featured Projects: ${localProjects.map(p => `${p.title}: ${p.description} (Demo/Repo: ${p.liveUrl || p.repoUrl || 'Available'})`).join('; ')}
+- Contact Email: tanaybiswas705@gmail.com
+- Location: Dhaka, Bangladesh
+
+GUIDELINES:
+1. Always represent Tanay politely.
+2. If visitors ask technical questions, general knowledge, or greet you, answer naturally as an authentic Gemini AI.
+3. If visitors ask about hiring, collaborating, or contacting Tanay, guide them to use the 'Get In Touch' section or email directly.
+      `;
+
+      chatConversationHistory.push({
+        role: "user",
+        parts: [{ text: userQuestion }]
+      });
+
+      if (chatConversationHistory.length > 6) {
+        chatConversationHistory = chatConversationHistory.slice(-6);
+      }
+
+      const requestPayload = {
+        systemInstruction: {
+          parts: [{ text: systemInstruction }]
+        },
+        contents: chatConversationHistory,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 300
+        }
+      };
+
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestPayload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error ${res.status}`);
+      }
+
+      const data = await res.json();
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (reply) {
+        chatConversationHistory.push({
+          role: "model",
+          parts: [{ text: reply }]
+        });
+        return reply.trim();
+      }
+
+      throw new Error("No response part returned");
+    }
+
+    function getLocalAIResponse(text) {
+      const q = text.toLowerCase();
+
+      if (q.includes('who') || q.includes('about') || q.includes('tanay') || q.includes('hi') || q.includes('hello') || q.includes('hey')) {
+        return `Hello! I'm Gemini, representing Tanay Biswas. He is a passionate Software Engineer and Full-Stack Architect studying at DIU. How can I help you explore his work?`;
+      }
+      if (q.includes('experience') || q.includes('job') || q.includes('career') || q.includes('work') || q.includes('history')) {
+        const roles = localExperience.map(e => `${e.role} at ${e.company} (${e.period})`).join('; ');
+        return `Tanay's career background includes: ${roles}. You can view the full interactive path in the Experience Timeline section!`;
+      }
+      if (q.includes('skill') || q.includes('tech') || q.includes('stack') || q.includes('language') || q.includes('know')) {
+        return `Tanay specializes in: ${localSkills.slice(0, 7).join(', ')} alongside modern cloud architecture and AI integrations.`;
+      }
+      if (q.includes('project') || q.includes('work') || q.includes('portfolio') || q.includes('app') || q.includes('built')) {
+        const names = localProjects.map(p => p.title).join(', ');
+        return `Tanay has built intelligent applications like: ${names}. Feel free to test their live demos right from the Featured Projects section!`;
+      }
+      if (q.includes('education') || q.includes('university') || q.includes('diu') || q.includes('study') || q.includes('degree')) {
+        return `${userProfile.aboutEdu}`;
+      }
+      if (q.includes('contact') || q.includes('hire') || q.includes('email') || q.includes('message') || q.includes('reach')) {
+        return `You can reach Tanay directly at tanaybiswas705@gmail.com or send a direct proposal through the Get In Touch form below!`;
+      }
+      if (q.includes('cv') || q.includes('resume')) {
+        return `You can download Tanay's updated resume directly using the "Download CV" button in the Hero section!`;
+      }
+      return `I'm here to assist you with Tanay's portfolio, software engineering projects, or scheduling a collaboration. Feel free to ask anything specific!`;
+    }
+
+    // --- TYPING ANIMATION ---
+    const typing = document.querySelector(".typing");
+    const phrases = ["Software Engineering Architect", "Full-Stack Modern Developer", "AI & Cloud Integrator"];
+    let pIdx = 0, cIdx = 0, isDel = false;
+
+    function runTyping() {
+      let current = phrases[pIdx];
+      typing.textContent = isDel ? current.substring(0, cIdx--) : current.substring(0, cIdx++);
+      if (!isDel && cIdx === current.length + 1) { isDel = true; setTimeout(runTyping, 1500); return; }
+      if (isDel && cIdx === 0) { isDel = false; pIdx = (pIdx + 1) % phrases.length; }
+      setTimeout(runTyping, isDel ? 40 : 80);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderProfile();
+      renderExperience();
+      renderProjects();
+      renderSkills();
+      renderInbox();
+      runTyping();
+      setupCloudListeners();
+      initVisitorCounter();
+      fetchGitHubStats();
+    });
+  </script>
+</body>
+</html>
